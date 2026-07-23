@@ -1,0 +1,4 @@
+Dag 1 kopierade jag över mitt gamla projekt för att se vad för kod jag kan återanvända.
+Mycket av gränssnittet verkar bra men behöver ta bort program logiken från gränsnitts classen.
+Skapade IVehicle interfacen och enum VehicleType {car, MC} men det kanske ska bort.
+Döpte också om mappar och namespaces för att anpassa till fler projekts strukturen som kommer skapas.
