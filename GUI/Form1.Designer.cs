@@ -40,8 +40,6 @@
             label2 = new Label();
             textBoxReg = new TextBox();
             groupBox2 = new GroupBox();
-            radioButtonMC = new RadioButton();
-            radioButtonCar = new RadioButton();
             tabPageAdmin = new TabPage();
             groupBox3 = new GroupBox();
             buttonRemove = new Button();
@@ -56,6 +54,7 @@
             textBoxCars = new TextBox();
             label1 = new Label();
             listBoxAdmin = new ListBox();
+            listBoxPickVehicleType = new ListBox();
             tabControl1.SuspendLayout();
             tabPageUser.SuspendLayout();
             groupBoxParking.SuspendLayout();
@@ -85,7 +84,7 @@
             tabPageUser.Location = new Point(4, 29);
             tabPageUser.Name = "tabPageUser";
             tabPageUser.Padding = new Padding(3);
-            tabPageUser.Size = new Size(1299, 922);
+            tabPageUser.Size = new Size(1050, 922);
             tabPageUser.TabIndex = 0;
             tabPageUser.Text = "User";
             tabPageUser.UseVisualStyleBackColor = true;
@@ -123,7 +122,7 @@
             // 
             // numericUpDownNewSpot
             // 
-            numericUpDownNewSpot.Location = new Point(160, 174);
+            numericUpDownNewSpot.Location = new Point(160, 253);
             numericUpDownNewSpot.Margin = new Padding(3, 4, 3, 4);
             numericUpDownNewSpot.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numericUpDownNewSpot.Name = "numericUpDownNewSpot";
@@ -134,7 +133,7 @@
             // label6
             // 
             label6.AutoSize = true;
-            label6.Location = new Point(3, 181);
+            label6.Location = new Point(3, 260);
             label6.Name = "label6";
             label6.Size = new Size(151, 20);
             label6.TabIndex = 9;
@@ -142,7 +141,7 @@
             // 
             // buttonMove
             // 
-            buttonMove.Location = new Point(198, 224);
+            buttonMove.Location = new Point(198, 303);
             buttonMove.Margin = new Padding(3, 4, 3, 4);
             buttonMove.Name = "buttonMove";
             buttonMove.Size = new Size(86, 31);
@@ -153,7 +152,7 @@
             // 
             // buttonPickUp
             // 
-            buttonPickUp.Location = new Point(105, 224);
+            buttonPickUp.Location = new Point(105, 303);
             buttonPickUp.Margin = new Padding(3, 4, 3, 4);
             buttonPickUp.Name = "buttonPickUp";
             buttonPickUp.Size = new Size(86, 31);
@@ -164,7 +163,7 @@
             // 
             // buttonPark
             // 
-            buttonPark.Location = new Point(13, 224);
+            buttonPark.Location = new Point(13, 303);
             buttonPark.Margin = new Padding(3, 4, 3, 4);
             buttonPark.Name = "buttonPark";
             buttonPark.Size = new Size(86, 31);
@@ -176,7 +175,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(7, 136);
+            label2.Location = new Point(7, 215);
             label2.Name = "label2";
             label2.Size = new Size(209, 20);
             label2.TabIndex = 4;
@@ -185,7 +184,7 @@
             // textBoxReg
             // 
             textBoxReg.CharacterCasing = CharacterCasing.Upper;
-            textBoxReg.Location = new Point(222, 129);
+            textBoxReg.Location = new Point(222, 208);
             textBoxReg.Margin = new Padding(3, 4, 3, 4);
             textBoxReg.MaxLength = 10;
             textBoxReg.Name = "textBoxReg";
@@ -196,36 +195,14 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(radioButtonMC);
-            groupBox2.Controls.Add(radioButtonCar);
+            groupBox2.Controls.Add(listBoxPickVehicleType);
             groupBox2.Location = new Point(7, 28);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(250, 91);
+            groupBox2.Size = new Size(250, 169);
             groupBox2.TabIndex = 2;
             groupBox2.TabStop = false;
-            groupBox2.Text = "Do you have a car or Motorcycle?";
-            // 
-            // radioButtonMC
-            // 
-            radioButtonMC.AutoSize = true;
-            radioButtonMC.Location = new Point(6, 56);
-            radioButtonMC.Name = "radioButtonMC";
-            radioButtonMC.Size = new Size(104, 24);
-            radioButtonMC.TabIndex = 5;
-            radioButtonMC.Text = "Motorcycle";
-            radioButtonMC.UseVisualStyleBackColor = true;
-            // 
-            // radioButtonCar
-            // 
-            radioButtonCar.AutoSize = true;
-            radioButtonCar.Checked = true;
-            radioButtonCar.Location = new Point(6, 27);
-            radioButtonCar.Name = "radioButtonCar";
-            radioButtonCar.Size = new Size(52, 24);
-            radioButtonCar.TabIndex = 4;
-            radioButtonCar.TabStop = true;
-            radioButtonCar.Text = "Car";
-            radioButtonCar.UseVisualStyleBackColor = true;
+            groupBox2.Text = "Pick vehicle type:";
+            groupBox2.Enter += groupBox2_Enter;
             // 
             // tabPageAdmin
             // 
@@ -384,6 +361,17 @@
             listBoxAdmin.Size = new Size(457, 916);
             listBoxAdmin.TabIndex = 0;
             // 
+            // listBoxPickVehicleType
+            // 
+            listBoxPickVehicleType.Dock = DockStyle.Fill;
+            listBoxPickVehicleType.FormattingEnabled = true;
+            listBoxPickVehicleType.HorizontalScrollbar = true;
+            listBoxPickVehicleType.Location = new Point(3, 23);
+            listBoxPickVehicleType.Name = "listBoxPickVehicleType";
+            listBoxPickVehicleType.Size = new Size(244, 143);
+            listBoxPickVehicleType.Sorted = true;
+            listBoxPickVehicleType.TabIndex = 0;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
@@ -399,7 +387,6 @@
             groupBoxParking.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numericUpDownNewSpot).EndInit();
             groupBox2.ResumeLayout(false);
-            groupBox2.PerformLayout();
             tabPageAdmin.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             groupBox3.PerformLayout();
@@ -413,8 +400,6 @@
         private TabControl tabControl1;
         private TabPage tabPageUser;
         private TabPage tabPageAdmin;
-        private RadioButton radioButtonCar;
-        private RadioButton radioButtonMC;
         private GroupBox groupBox2;
         private GroupBox groupBoxParking;
         private Label label2;
@@ -438,5 +423,6 @@
         private Button buttonMove;
         private Label label6;
         private NumericUpDown numericUpDownNewSpot;
+        private ListBox listBoxPickVehicleType;
     }
 }

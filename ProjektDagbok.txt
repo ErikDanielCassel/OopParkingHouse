@@ -1,4 +1,25 @@
-Dag 1 kopierade jag över mitt gamla projekt för att se vad för kod jag kan återanvända.
+Dag 1
+kopierade jag över mitt gamla projekt för att se vad för kod jag kan återanvända.
 Mycket av gränssnittet verkar bra men behöver ta bort program logiken från gränsnitts classen.
 Skapade IVehicle interfacen och enum VehicleType {car, MC} men det kanske ska bort.
 Döpte också om mappar och namespaces för att anpassa till fler projekts strukturen som kommer skapas.
+
+Dag 2
+definerade IVehicle och IParkingSpot med de olika egenskaperna och metoderna de bör ha om jag inte glömt något.
+IParkingspot har metoderna kopplat till att parkera fordon.
+Implementerade sedan ParkingSpot.
+Skapade också testProject där jag kan kalla på olika metoder och skapa olika classer för att se att de fungerar som de ska.
+Jag har inte helt och hållet testat ParkingSpot klassen men det bör fungera som den ska.
+Alla Vehicle kommer ha en int size, MC kommer ha 2 och Car kommer ha 4 som size. Det är på detta sättet programmet kommer kunna tillåta
+flera mindre fordon att parkera på samma plats.
+Min nästa tanke är om jag ska skapa en ParkingHouse klass som har en array av ParkingSpot i sig eller om det bara behövs en array.
+Jag tänker nu att det bör vara en klass så att jag kan knyta parkerings metoder etc. till den som letar upp en ledig ParkingSpot bland annat.
+Skapade initialize filerna.
+
+Dag 3
+Skapade en Vehicle barn som inte har någon specifik fordons type för att kunna parkera andra fordon än bilar och MC i framtiden.
+Initializer klassen fick metoder för att läsa in data för att starta en ny session baserad på tidigare parkerade bilar och
+hur stor parkerings platsen ska vara.
+Skapade sedan BlankVehicle som kommer användas för att kunna addera nya fordons typer med konfigurations filen.
+
+Lade till En CheckListBox för att välja fordons type.

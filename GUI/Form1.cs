@@ -1,42 +1,34 @@
+using CentralLogic;
+using DataAccess;
 using Microsoft.VisualBasic.Logging;
 using System.Net.Http.Headers;
-using static ParkingHus.Form1;
+using static GUI.Form1;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
-namespace ParkingHus
+namespace GUI
 {
     public partial class Form1 : Form
     {
-        internal class ParkingSpot
-        {
-            public bool isCar = false; //Both are false if the parkingspot is empty
-            public bool isMC = false;
-            public string? reg = null;
-            public string? reg2 = null; //Registration of the second MC if there is one.
-            public DateTime dateParked = default;
-            public DateTime dateParked2 = default; //The time the second MC parked if there is one.
-        }
-#pragma warning disable IDE0044
-
-        static int parkingLotSize = 100;
-        ParkingSpot[] parkingLot = new ParkingSpot[parkingLotSize]; //the whole parkinglot
-        List<int> spotsWithOneMC = [];
+        ParkingHouse parkingHouse; //The whole parking garage.
         int numCars = 0;
-        int numMC = 0;
-        int numEmpty = parkingLotSize;
-#pragma warning restore IDE0044
+        int numMC = 0; //TODO: Ask Salar if I need to show these values.
+        int numEmpty;
+
         public Form1()
         {
             InitializeComponent();
-            for (int i = 0; i < parkingLotSize; i++)
+            parkingHouse = Initalizer.StartUp();
+            numEmpty = 100; //TODO: Set up how to calculate number of empty spots.
+            foreach (var vehicleType in Initalizer.ReadVehicleConfigurationData())
             {
-                parkingLot[i] = new ParkingSpot();
+                listBoxPickVehicleType.Items.Add(vehicleType.KindOfVehicle);
             }
             UpdateGUI();
         }
         private void buttonSearch_Click(object sender, EventArgs e)
         {
-            (int i, DateTime t, bool b) = FindVehicle(textBoxTools.Text);
+            /*(int i, DateTime t, bool b) = FindVehicle(textBoxTools.Text);
             string text; //takes the data about the vehicle and puts it in text
             if (i != -1)
             {
@@ -60,11 +52,11 @@ namespace ParkingHus
                     text = $"reg: {textBoxTools.Text}\nMC\nParket: {spot.dateParked2.ToShortDateString()} : {spot.dateParked2.ToShortTimeString()}\nSpot: {i + 1}";
                 }
                 MessageBox.Show(text, "Search Result");
-            }
+            }*/
         }
         private void buttonRemove_Click(object sender, EventArgs e)
         {
-            RemoveVehicle(textBoxTools.Text);
+           // RemoveVehicle(textBoxTools.Text);
         }
         private void textBoxReg_KeyPress(object sender, KeyPressEventArgs e)
         {
@@ -79,7 +71,7 @@ namespace ParkingHus
 
             if (OKToPark(textBoxReg.Text))
             {
-                int lotIndex = Park(textBoxReg.Text, radioButtonMC.Checked);
+                int lotIndex = Park(textBoxReg.Text, false); //TODO: false is temporary fix it later. Now you can only park cars.
                 if (lotIndex == -1)
                 {
                     MessageBox.Show("The parking lot is full");
@@ -94,15 +86,15 @@ namespace ParkingHus
         }
         private void buttonPickUp_Click(object sender, EventArgs e)
         {
-            (int i, TimeSpan time) = RemoveVehicle(textBoxReg.Text);
+            /*(int i, TimeSpan time) = RemoveVehicle(textBoxReg.Text);
             if (i != -1)
             {
                 MessageBox.Show($"Vehicle {textBoxReg.Text} was parked at lot {i + 1}\nIt has been parked for {time.Days} days, {time.Hours} hours and {time.Minutes} minutes");
-            }
+            }*/
         }
         private void buttonMove_Click(object sender, EventArgs e)
         {
-            (int i, DateTime tempdate, bool b) = FindVehicle(textBoxReg.Text);
+           /* (int i, DateTime tempdate, bool b) = FindVehicle(textBoxReg.Text);
             if (i != -1) //i is -1 if the vehicle isn't there
             {
                 int newIndex = (int)(numericUpDownNewSpot.Value) - 1;
@@ -143,12 +135,12 @@ namespace ParkingHus
                 else
                 {
                     MessageBox.Show("You can't move it to the same spot");
-                } 
+                }
             }
-            UpdateGUI();
+            UpdateGUI();*/
         }
 
-        private int Park(string reg, bool isMC, int spotIndex= -1)
+        private int Park(string reg, bool isMC, int spotIndex = -1)
         {
             //parks and returns the index of the spot, returns -1 if failed parking
             int i;
@@ -158,55 +150,56 @@ namespace ParkingHus
             }
             else
             {
-                i = ParkCar(reg, spotIndex);
+                i = 1;
             }
             UpdateGUI();
             return i;
 
         }
-        private int ParkMC(string reg, int spotIndex= -1)
+        private int ParkMC(string reg, int spotIndex = -1)
         {
-            if (spotIndex == -1)
-            {
-                if (spotsWithOneMC.Count != 0 &&
-                    MessageBox.Show("Do you want to share spot with another motorcycle?", "Parking MC", MessageBoxButtons.YesNo) == DialogResult.Yes)
-                {
-                    int lotIndex = spotsWithOneMC[0];
-                    spotsWithOneMC.RemoveAt(0);
-                    parkingLot[lotIndex].reg2 = reg;
-                    parkingLot[lotIndex].dateParked2 = DateTime.Now;
-                    numMC++;
-                    return lotIndex;
-                }
-            }
-            else if (spotsWithOneMC.Contains(spotIndex))
-            {
-                spotsWithOneMC.Remove(spotIndex);
-                parkingLot[spotIndex].reg2 = reg;
-                numMC++;
-                return spotIndex;
-            }
-            //only runs if there is no lots with 1 MC or the user says no to sharing parking space.}
-            int i = ParkOwnSpace(reg, true, spotIndex);
-            if (i != -1)
-            {
-                numMC++;
-            }
-            return i;
-        }
-        private int ParkCar(string reg, int spotIndex = -1)
-        {
-            int i = ParkOwnSpace(reg, false, spotIndex);
-            if (i != -1)
-            {
-                numCars++;
-            }
-            return i;
+            /*  if (spotIndex == -1)
+              {
+                  if (spotsWithOneMC.Count != 0 &&
+                      MessageBox.Show("Do you want to share spot with another motorcycle?", "Parking MC", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                  {
+                      int lotIndex = spotsWithOneMC[0];
+                      spotsWithOneMC.RemoveAt(0);
+                      parkingLot[lotIndex].reg2 = reg;
+                      parkingLot[lotIndex].dateParked2 = DateTime.Now;
+                      numMC++;
+                      return lotIndex;
+                  }
+              }
+              else if (spotsWithOneMC.Contains(spotIndex))
+              {
+                  spotsWithOneMC.Remove(spotIndex);
+                  parkingLot[spotIndex].reg2 = reg;
+                  numMC++;
+                  return spotIndex;
+              }
+              //only runs if there is no lots with 1 MC or the user says no to sharing parking space.}
+              int i = ParkOwnSpace(reg, true, spotIndex);
+              if (i != -1)
+              {
+                  numMC++;
+              }
+              return i;
+          }
+          private int ParkCar(string reg, int spotIndex = -1)
+          {
+              int i = ParkOwnSpace(reg, false, spotIndex);
+              if (i != -1)
+              {
+                  numCars++;
+              }
+              return i;*/
+            return 1;
         }
         private int ParkOwnSpace(string reg, bool isMC, int spotIndex = -1)
         {
             //Loops over all parking spots and parks the car at the first empty spot and returns the index of the spot, returns -1 if no empty space
-            if (spotIndex == -1)
+            /*if (spotIndex == -1)
             {
                 for (int i = 0; i < parkingLotSize; i++)
                 {
@@ -244,12 +237,13 @@ namespace ParkingHus
                 }
 
                 return -1;
-            }
+            }*/
+            return 1;
         }
         private bool OKToPark(string reg)
         //Validates if the registration is fully valid and the vehicle can be attemped to be parked.
         {
-            if (CorrectReg(reg))
+            /*if (CorrectReg(reg))
             {
                 if (!parkingLot.Any(lot => reg == lot.reg || reg == lot.reg2)) //Checks for no duplicate registration numbers
                 {
@@ -264,11 +258,12 @@ namespace ParkingHus
             else
             {
                 return false;
-            }
+            }*/
+            return true;
         }
-      
 
-        private (int, TimeSpan) RemoveVehicle(string reg, int Index = -1)
+
+        /*private (int, TimeSpan) RemoveVehicle(string reg, int Index = -1)
         {
             (int i, DateTime time, bool onSecondSpot) = FindVehicle(reg);
             if (i != -1) //Only try to remove vehicle if one was found
@@ -305,34 +300,8 @@ namespace ParkingHus
             }
             UpdateGUI();
             return (i, DateTime.Now - time);
-        }
-        private (int, DateTime, bool) FindVehicle(string reg) //bool is true if the found vehicle is in the second spot.
-        {
-            DateTime time = default;
-            //return the index and time parked for registration in parkinglot or -1 and default timespan value if the reg isn't there
-            if (CorrectReg(reg))
-            {
-                int i = Array.FindIndex(parkingLot, lot => reg == lot.reg);
-                if (i == -1)
-                {
-                    i = Array.FindIndex(parkingLot, lot => reg == lot.reg2);
-                    if (i == -1)
-                    {
-                        MessageBox.Show($"Vehicle {reg} is not parked here");
-                        return (i, time, false);
-                    }
-                    time = parkingLot[i].dateParked2;
-                    return (i, time, true);
+        }*/
 
-                }
-                else
-                {
-                    time = parkingLot[i].dateParked;
-                    return (i, time, false);
-                }
-            }
-            return (-1, time, false);
-        }
         private static bool CorrectReg(string reg)
         {
             bool b = reg.Length == 6 && //checks if that there is no more text after the registration number
@@ -353,7 +322,7 @@ namespace ParkingHus
         }
         private void UpdateListBoxUser()
         {
-            listBoxUser.Items.Clear();
+           /* listBoxUser.Items.Clear();
             for (int i = 0; i < parkingLotSize; i++)
             {
                 ParkingSpot spot = parkingLot[i];
@@ -374,11 +343,11 @@ namespace ParkingHus
                 {
                     listBoxUser.Items.Add($"MC\t{spot.reg2}");
                 }
-            }
+            }*/
         }
         private void UpdateListBoxAdmin()
         {
-            listBoxAdmin.Items.Clear();
+            /*listBoxAdmin.Items.Clear();
             for (int i = 0; i < parkingLotSize; i++)
             {
                 ParkingSpot spot = parkingLot[i];
@@ -399,7 +368,7 @@ namespace ParkingHus
                 {
                     listBoxAdmin.Items.Add($"MC\t{spot.reg2}\t{spot.dateParked2.ToShortDateString()} : {spot.dateParked2.ToLongTimeString()}\tSpot: {i + 1}");
                 }
-            }
+            }*/
         }
         private void UpdateDisplayNumbers()
         {
@@ -407,6 +376,5 @@ namespace ParkingHus
             textBoxMC.Text = numMC.ToString();
             textBoxEmpty.Text = numEmpty.ToString();
         }
-
     }
 }

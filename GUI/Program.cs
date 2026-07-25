@@ -1,6 +1,6 @@
-using ParkingHus;
+using GUI;
 
-namespace ParkingHus
+namespace GUI
 {
     internal static class Program
     {
