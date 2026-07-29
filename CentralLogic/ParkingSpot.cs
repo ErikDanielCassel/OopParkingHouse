@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace CentralLogic;
 
@@ -12,10 +8,11 @@ public class ParkingSpot : IParkingSpot
     public int MaxSize { get; }
     public int CurrentSize { get { return ParkedVehicles.Sum(vehicle => vehicle.Size); } }
 
-    public ParkingSpot(int size, List<Vehicle> vehicles)
+    [JsonConstructor]
+    public ParkingSpot(int MaxSize, List<Vehicle> Parkedvehicles)
     {
-        MaxSize = size;
-        ParkedVehicles = vehicles;
+        this.MaxSize = MaxSize;
+        ParkedVehicles = Parkedvehicles;
     }
     public ParkingSpot(int size) : this(size, [])
     {
@@ -52,12 +49,8 @@ public class ParkingSpot : IParkingSpot
     public Vehicle PickUp(string regNum)
     {
         //Removes the vehicle from the list and returns it
-        Vehicle vehicle = ParkedVehicles.First(vehicle => vehicle.RegNum == regNum);
-        bool success = ParkedVehicles.Remove(vehicle);
-        if (!success)
-        {
-            throw new InvalidOperationException("That vehicle wasn't parked at this spot.");
-        }
+        var vehicle = GetVehicle(regNum);
+        ParkedVehicles.Remove(vehicle);
         return vehicle;
     }
     public bool ContainsVehicle(Vehicle vehicle)
@@ -70,5 +63,16 @@ public class ParkingSpot : IParkingSpot
         //Checks if the vehicle is parked in this spot.
         return ParkedVehicles.Exists(vehicle => vehicle.RegNum == regNum);
     }
-
+    public Vehicle GetVehicle(string regNum)
+    {
+        try
+        {
+            Vehicle vehicle = ParkedVehicles.First(vehicle => vehicle.RegNum == regNum);
+            return vehicle;
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new InvalidOperationException("Can inte hitta fordonet", ex);
+        }
+    }
 }

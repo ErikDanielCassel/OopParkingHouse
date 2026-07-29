@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace CentralLogic;
 
@@ -12,7 +8,9 @@ public class ParkingHouse : IParkingHouse
     private ParkingSpot[] parkingSpots;
 
     //Properties
+    public int Size { get => parkingSpots.Length; }
     public ParkingSpot[] ParkingSpots => parkingSpots;
+
 
     //Constructors
     public ParkingHouse() : this(100)
@@ -30,56 +28,130 @@ public class ParkingHouse : IParkingHouse
     {
         this.parkingSpots = storedParkingSpots;
     }
-    public ParkingHouse(int size, ParkingSpot[] storedParkingSpots)
+    [JsonConstructor]
+    public ParkingHouse(int size, ParkingSpot[] ParkingSpots)
     {
-        this.parkingSpots = storedParkingSpots;
+        this.parkingSpots = ParkingSpots;
         Array.Resize(ref this.parkingSpots, size);
+        for (int i = ParkingSpots.Length; i < size; i++)
+        {
+            ParkingSpots[i] = new ParkingSpot();
+        }
 
     }
 
     //Methods
     public bool ContainsVehicle(Vehicle vehicle)
     {
-        throw new NotImplementedException();
+        return Array.Exists(parkingSpots, x => x.ContainsVehicle(vehicle));
+    }
+    public bool ContainsVehicle(string regNum)
+    {
+        return Array.Exists(parkingSpots, x => x.ContainsVehicle(regNum));
     }
 
-    public ParkingSpot MoveVehicle(Vehicle vehicle, ParkingSpot parkingSpot)
+    public void MoveVehicle(string regNum, ParkingSpot parkingSpot)
     {
-        throw new NotImplementedException();
+        int i = FindVehicle(regNum);
+        var vehicle = PickUp(regNum);
+        try
+        {
+            parkingSpot.Park(vehicle);
+        }
+        catch (Exception)
+        {
+            parkingSpots[i].Park(vehicle); //put back the vehicle in case the parking failed.
+            throw;
+        }
     }
 
-    public ParkingSpot MoveVehicle(string regNum, ParkingSpot parkingSpot)
+    public void MoveVehicle(string regNum, int parkingSpotIndex)
     {
-        throw new NotImplementedException();
-    }
-
-    public ParkingSpot MoveVehicle(Vehicle vehicle, int parkingSpotIndex)
-    {
-        throw new NotImplementedException();
-    }
-
-    public ParkingSpot MoveVehicle(string regNum, int parkingSpotIndex)
-    {
-        throw new NotImplementedException();
+        MoveVehicle(regNum, parkingSpots[parkingSpotIndex]);
     }
 
     public void Park(Vehicle vehicle)
     {
-        throw new NotImplementedException();
+        foreach (ParkingSpot parkingSpot in parkingSpots)
+        {
+            try
+            {
+                parkingSpot.Park(vehicle);
+                break;
+            }
+            catch (Exception) { }
+        }
     }
 
-    public void Park(string regNum)
+    public void Park(string regNum, string? vehicleType, List<Vehicle> vehicleTemplates)
     {
-        throw new NotImplementedException();
-    }
+        if (!ContainsVehicle(regNum))
+        {
+            Vehicle vehicle;
+            switch (vehicleType)
+            {
+                case "Car":
+                    {
+                        vehicle = new Car(regNum);
+                        break;
+                    }
+                case "MC":
+                    {
+                        vehicle = new MC(regNum);
+                        break;
+                    }
+                case null:
+                    {
+                        throw new ArgumentNullException("Ingen fordons typ valdes.");
+                    }
 
-    public Vehicle PickUp(Vehicle vehicle)
-    {
-        throw new NotImplementedException();
-    }
+                default:
+                    Vehicle vehicleTemplate = vehicleTemplates.Find(x => vehicleType == x.KindOfVehicle)!;
+                    vehicle = new BlankVehicle(regNum, vehicleType, vehicleTemplate.Size);
+                    break;
+            }
+            bool foundParking = false;
+            foreach (var parkingSpot in ParkingSpots)
+            {
+                try
+                {
+                    parkingSpot.Park(vehicle);
+                    foundParking = true;
+                    break;
 
+                }
+                catch (Exception)
+                {
+                }
+            }
+            if (!foundParking)
+            {
+                throw new InvalidOperationException($"{regNum} får inte plats på någon plats alls");
+            }
+
+        }
+        else { throw new ArgumentException("Du kan inte parkera flera fordon med samma registreringsnummer."); }
+    }
     public Vehicle PickUp(string regNum)
     {
-        throw new NotImplementedException();
+        int i = FindVehicle(regNum);
+        return parkingSpots[i].PickUp(regNum);
+    }
+    public int FindVehicle(string regNum)
+    {
+        int index = Array.FindIndex(parkingSpots, x => x.ContainsVehicle(regNum));
+        if (index != -1)
+        {
+            return index;
+        }
+        else
+        {
+            throw new ArgumentException($"{regNum} finns inte parkerad här.");
+        }
+    }
+    public Vehicle GetVehicle(string regNum)
+    {
+        int index = FindVehicle(regNum);
+        return parkingSpots[index].GetVehicle(regNum);
     }
 }

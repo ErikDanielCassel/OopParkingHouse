@@ -1,5 +1,3 @@
-using GUI;
-
 namespace GUI
 {
     internal static class Program

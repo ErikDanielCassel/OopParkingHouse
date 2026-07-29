@@ -23,3 +23,18 @@ hur stor parkerings platsen ska vara.
 Skapade sedan BlankVehicle som kommer användas för att kunna addera nya fordons typer med konfigurations filen.
 
 Lade till En CheckListBox för att välja fordons type.
+
+Dag 4
+Började med att implementera parkerings funktion baserat på vilken fordonstype användaren valt.
+
+Dag 5
+Implementerade Park metoder och move metoder. Tog bort bus fordons testet. Lade till json derivedclass attribut
+Vehicle klassen så att json konfigurerings filen kunde läsas och fixade till configurations klassen.
+Skapade en tree view för att fungera som karta för parkeringsplatsen.
+Sedan såg jag till att uppdatera den när någon ändring gjordes i bakgrunden.
+Tog bort onödiga element från gränssnittet och värden kopplade till dem.
+Fixade att inga nya parkerings platser skapade utan det blev bara null på ny skapade parkeringsplatser
+när parkeringshuset blev större om man ändrade konfigurations filens NumberOfParkingSpots till ett
+större tal.
+Fixade Läsningen av gammal parkeringshus json fil där jsonDeserializer skrev över alla
+parkeringsplatser då den inte hittade rätt konstruktör för ParkingSpot.

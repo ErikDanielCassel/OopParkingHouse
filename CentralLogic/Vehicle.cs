@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Text.Json.Serialization;
 
 namespace CentralLogic;
 
+[JsonDerivedType(typeof(Car), "Car")]
+[JsonDerivedType(typeof(MC), "MC")]
+[JsonDerivedType(typeof(BlankVehicle), "BlankVehicle")]
 public abstract class Vehicle : IVehicle
 {
     //The base for all vehicle types and the type parkingspots will have in their lists.
@@ -23,7 +22,7 @@ public abstract class Vehicle : IVehicle
             }
             else
             {
-                throw new FormatException("Incorrectly formated registration number.");
+                throw new FormatException("Inkorrekt registreringsnummer format.\nDet ska var \"abc123\"");
             }
         }
     }

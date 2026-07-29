@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CentralLogic;
 using System.Text.Json;
-using CentralLogic;
 
 namespace DataAccess;
 
@@ -12,7 +7,7 @@ public static class Initalizer
 {
     const string _path = "../../../../";
     const string _ConfigurationDataFile = _path + "ConfigurationData.json";
-    const string _ParkingHouseFile = _path + "ParkingHouseSize.json";
+    const string _ParkingHouseFile = _path + "ParkingHouse.json";
     const string _CzkPerHoursFile = _path + "CzkPerHours.json";
     public static void CreateFiles()
     {
@@ -22,7 +17,6 @@ public static class Initalizer
     }
     public static ParkingHouse StartUp()
     {
-        //TODO: Add Vehicle types from file and make them options on the gui.
         return new ParkingHouse(ReadParkingHouseSize(), ReadParkingHouse().ParkingSpots);
     }
     private static ConfigurationData ReadConfigurationData()
@@ -43,7 +37,7 @@ public static class Initalizer
     public static List<Vehicle> ReadVehicleConfigurationData()
     {
         var json = ReadConfigurationData();
-        return json.vehicleList;
+        return json.VehicleList;
     }
     public static ParkingHouse ReadParkingHouse()
     {
@@ -63,15 +57,10 @@ public static class Initalizer
         string jsonString = File.ReadAllText(_CzkPerHoursFile);
         return JsonSerializer.Deserialize<CzkPerHour>(jsonString)!;
     }
-
-    public static void CreateVehicleConfiguration(VehicleConfigurationData vehicleConfigurationData)
-    {
-        //TODO: Vehicle type stuff connected to startUp.
-    }
     public static void WriteStandardParkingHouse()
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
-        string jsonString = JsonSerializer.Serialize(new ParkingHouse(), options);
+        string jsonString = JsonSerializer.Serialize(new ParkingHouse(ReadParkingHouseSize()), options);
         File.WriteAllText(_ParkingHouseFile, jsonString);
     }
     public static void WriteStandardCzkPerHours()
@@ -83,7 +72,7 @@ public static class Initalizer
     public static void WriteStandardConfigurationData()
     {
         var options = new JsonSerializerOptions { WriteIndented = true };
-        string jsonString = JsonSerializer.Serialize(new ConfigurationData(), options);
+        string jsonString = JsonSerializer.Serialize(new ConfigurationData(100, new List<Vehicle> { new Car("abc123"), new MC("abc123") }), options);
         File.WriteAllText(_ConfigurationDataFile, jsonString);
     }
 }

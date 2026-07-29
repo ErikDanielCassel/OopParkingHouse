@@ -1,6 +1,5 @@
 ﻿using CentralLogic;
 using DataAccess;
-using static DataAccess.Initalizer;
 
 ParkingSpot parkingSpot = new ParkingSpot();
 

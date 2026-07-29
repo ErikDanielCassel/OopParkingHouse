@@ -1,23 +1,19 @@
 {
   "NumberOfParkingSpots": 100,
-  "vehicleList": [
+  "VehicleList": [
     {
-      "RegNum": "ABC123",
+      "$type": "Car",
       "KindOfVehicle": "Car",
       "Size": 4,
-      "TimeParked": "2026-07-24T21:51:19.5356737+02:00"
+      "RegNum": "abc123",
+      "TimeParked": "2026-07-28T22:07:46.2013136+02:00"
     },
     {
-      "RegNum": "ABC123",
+      "$type": "MC",
       "KindOfVehicle": "MC",
       "Size": 2,
-      "TimeParked": "2026-07-24T21:51:19.541406+02:00"
-    },
-    {
-      "RegNum": "ABC123",
-      "KindOfVehicle": "Bus",
-      "Size": 10,
-      "TimeParked": "2026-07-24T21:51:19.5414967+02:00"
+      "RegNum": "abc123",
+      "TimeParked": "2026-07-28T22:07:46.2052026+02:00"
     }
   ]
 }
