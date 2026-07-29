@@ -1,4 +1,6 @@
-﻿namespace CentralLogic;
+﻿using System.Text.Json.Serialization;
+
+namespace CentralLogic;
 
 public class BlankVehicle : Vehicle
 {
@@ -10,4 +12,11 @@ public class BlankVehicle : Vehicle
         KindOfVehicle = kindOfVehicle;
         Size = size;
     }
+    [JsonConstructor]
+    public BlankVehicle(string regNum, DateTime TimeParked, string kindOfVehicle, int size) : base(regNum, TimeParked)
+    {
+        KindOfVehicle = kindOfVehicle;
+        Size = size;
+    }
+
 }
